@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # from datetime import datetime, date
 from time import sleep
@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 
 import logging
 
-from pyepm import api, config, __version__
+from eth import api, config, __version__
 from bitcoin import *  # NOQA
 
 from urllib import urlopen
@@ -45,10 +45,10 @@ pyepmLogger.setLevel(logging.INFO)
 # ETH can be stored in the "--sender" unlocked account.  The "sender" can request
 # a daily amount from the contract wallet, and should be unable to fully withdraw from
 # the contract wallet if it has been deployed and configured correctly.
-useWallet = False  # when True, need to set the following remaining values:
-instance.walletContract = ''  # address of the contract wallet
+useWallet = True # when True, need to set the following remaining values:
+instance.walletContract = '0x0a88166C35c7C84C07244185eA08B91BB078418f'  # address of the contract wallet
 instance.weiRefill = int(1e18)  # 1 ETH.  Amount to refill the "hot" sender account each time walletWithdraw() is called
-aWalletOwner = ''  # address of an owner of the contract wallet
+aWalletOwner = '0x0a88166C35c7C84C07244185eA08B91BB078418f'  # address of an owner of the contract wallet
 
 def get_hash_by_height(height,network='btc'):
     url = 'https://blockchain.info/block-height/'+str(height)+'?format=json'
@@ -80,13 +80,13 @@ def main():
     parser.add_argument('-s', '--sender', required=True, help='sender of transaction')
     parser.add_argument('-r', '--relay', required=True, help='relay contract address')
 
-    parser.add_argument('--rpcHost', default='127.0.0.1', help='RPC hostname')
-    parser.add_argument('--rpcPort', default='8545', type=int, help='RPC port')
-    parser.add_argument('--startBlock', default=0, type=int, help='block number to start fetching from')
+    parser.add_argument('--rpcHost', default='64.227.5.146', help='RPC hostname')
+    parser.add_argument('--rpcPort', default='9500', type=int, help='RPC port')
+    parser.add_argument('--startBlock', default=625332, type=int, help='block number to start fetching from')
     parser.add_argument('-w', '--waitFor', default=0, type=int, help='number of blocks to wait between fetches')
     parser.add_argument('--gasPrice', default=int(10e12), type=int, help='gas price')  # default 10 szabo
     parser.add_argument('--fetch', action='store_true', help='fetch blockheaders')
-    parser.add_argument('-n', '--network', default=BITCOIN_TESTNET, choices=[BITCOIN_TESTNET, BITCOIN_MAINNET], help='Bitcoin network')
+    parser.add_argument('-n', '--network', default=BITCOIN_MAINNET, choices=[BITCOIN_TESTNET, BITCOIN_MAINNET], help='Bitcoin network')
     parser.add_argument('-d', '--daemon', default=False, action='store_true', help='run as daemon')
     parser.add_argument('--feeVTX', default=0, type=int, help='fee to charge for verifications')
     parser.add_argument('--feeRecipient', help='address of fee recipient')
@@ -234,7 +234,7 @@ def fetchHeaders(chunkStartNum, chunkSize, numChunk, feeVerifyTx, feeRecipient, 
             logger.debug("Block header: %s" % repr(bhStr.decode('hex')))
             strings += bhStr
 
-        storeHeaders(strings.decode('hex'), chunkSize, feeVerifyTx, feeRecipient)
+        # storeHeaders(strings.decode('hex'), chunkSize, feeVerifyTx, feeRecipient)
 
         chainHead = getBlockchainHead()
         logger.info('@@@ DONE hexHead: %s' % blockHashHex(chainHead))
